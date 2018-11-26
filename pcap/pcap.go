@@ -6,10 +6,16 @@ import (
 	"os"
 )
 
-// A Pcap is a wrapper around pcap file.
+// A Pcap is a wrapper around pcap file
 type Pcap struct {
 	File       *os.File
 	Endianness binary.ByteOrder
+}
+
+// DataLinkTypeMapping maps network header field to a link type
+var DataLinkTypeMapping = map[uint32]string{
+	0: "null",
+	1: "ethernet",
 }
 
 // NewPcap constructs a pcap file
@@ -29,7 +35,7 @@ func NewPcap(file *os.File) Pcap {
 	return pcap
 }
 
-// Size returns the size of the pcap file.
+// Size returns the size of the pcap file
 func (p *Pcap) Size() int64 {
 	stat, err := p.File.Stat()
 	check(err)
@@ -44,6 +50,18 @@ func (p *Pcap) MagicNumberBytes() []byte {
 	return buffer
 }
 
+// LinkType returns link type for pcap file
+func (p *Pcap) LinkType() string {
+	linkTypeBytes := make([]byte, 4)
+	_, err := p.File.ReadAt(linkTypeBytes, 20)
+	check(err)
+	var linkTypeInt uint32
+	buffer := bytes.NewReader(linkTypeBytes)
+	err = binary.Read(buffer, p.Endianness, &linkTypeInt)
+	check(err)
+	return DataLinkTypeMapping[linkTypeInt]
+}
+
 // make a pcap packet struct
 // make properties for:
 // each one of its header fields
@@ -53,11 +71,11 @@ func (p *Pcap) MagicNumberBytes() []byte {
 // contents
 // packets
 
-// BytesToIntForEndianness Determines the int for four given bytes given an endianness
+// BytesToIntForEndianness determines the int for four bytes given an endianness
 func BytesToIntForEndianness(byteArray []byte, endianness binary.ByteOrder) uint32 {
 	var expectedMagicNumber uint32
 	buffer := bytes.NewReader(byteArray)
-	err := binary.Read(buffer, endianness, expectedMagicNumber)
+	err := binary.Read(buffer, endianness, &expectedMagicNumber)
 	check(err)
 	return expectedMagicNumber
 }
