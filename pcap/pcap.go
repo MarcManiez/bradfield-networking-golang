@@ -67,20 +67,26 @@ func (p *Pcap) Payload() []byte {
 	return p.File[HeaderSize:p.Size()]
 }
 
-// make a pcap packet struct
-// make properties for:
-// each one of its header fields
-// its size
-// its entire contents
-// header
-// contents
-// packets
+// EthernetFrames returns the ethernet frames of the Pcap file
+func (p *Pcap) EthernetFrames() []EthernetFrame {
+	var frames = make([]EthernetFrame, 0)
+	var offset int
+	for offset < p.Size() {
+		payloadLengthBytes := p.File[offset+8 : offset+12]
+		payloadLength := BytesToIntForEndianness(payloadLengthBytes, p.Endianness)
+		endOfPacket := offset + 16 + payloadLength
+		ethernetFrame := EthernetFrame{Data: p.File[offset+16 : endOfPacket]}
+		frames = append(frames, ethernetFrame)
+		offset = endOfPacket
+	}
+	return frames
+}
 
 // BytesToIntForEndianness determines the int for four bytes given an endianness
-func BytesToIntForEndianness(byteArray []byte, endianness binary.ByteOrder) uint32 {
+func BytesToIntForEndianness(byteArray []byte, endianness binary.ByteOrder) int {
 	var expectedMagicNumber uint32
 	buffer := bytes.NewReader(byteArray)
 	err := binary.Read(buffer, endianness, &expectedMagicNumber)
 	check(err)
-	return expectedMagicNumber
+	return int(expectedMagicNumber)
 }
