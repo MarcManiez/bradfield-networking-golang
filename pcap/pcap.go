@@ -8,7 +8,7 @@ import (
 
 // A Pcap is a wrapper around pcap file
 type Pcap struct {
-	File       *os.File
+	File       []byte
 	Endianness binary.ByteOrder
 }
 
@@ -18,9 +18,17 @@ var DataLinkTypeMapping = map[uint32]string{
 	1: "ethernet",
 }
 
+// HeaderSize describes the size of the Pcap file header
+const HeaderSize = 24
+
 // NewPcap constructs a pcap file
 func NewPcap(file *os.File) Pcap {
-	pcap := Pcap{File: file}
+	stat, err := file.Stat()
+	check(err)
+	fileBytes := make([]byte, stat.Size())
+	_, err = file.ReadAt(fileBytes, 0)
+	check(err)
+	pcap := Pcap{File: fileBytes}
 	defaultEndianness := binary.BigEndian
 	expectedMagicBytes := []byte{0xa1, 0xb2, 0xc3, 0xd4}
 	actualMagicBytes := pcap.MagicNumberBytes()
@@ -36,30 +44,27 @@ func NewPcap(file *os.File) Pcap {
 }
 
 // Size returns the size of the pcap file
-func (p *Pcap) Size() int64 {
-	stat, err := p.File.Stat()
-	check(err)
-	return stat.Size()
+func (p *Pcap) Size() int {
+	return len(p.File)
 }
 
 // MagicNumberBytes returns the pcap's magic number
 func (p *Pcap) MagicNumberBytes() []byte {
-	buffer := make([]byte, 4)
-	_, err := p.File.ReadAt(buffer, 0)
-	check(err)
-	return buffer
+	return p.File[0:4]
 }
 
 // LinkType returns link type for pcap file
 func (p *Pcap) LinkType() string {
-	linkTypeBytes := make([]byte, 4)
-	_, err := p.File.ReadAt(linkTypeBytes, 20)
-	check(err)
 	var linkTypeInt uint32
-	buffer := bytes.NewReader(linkTypeBytes)
-	err = binary.Read(buffer, p.Endianness, &linkTypeInt)
+	buffer := bytes.NewReader(p.File[20:24])
+	err := binary.Read(buffer, p.Endianness, &linkTypeInt)
 	check(err)
 	return DataLinkTypeMapping[linkTypeInt]
+}
+
+// Payload returns the payload of the pcap file
+func (p *Pcap) Payload() []byte {
+	return p.File[HeaderSize:p.Size()]
 }
 
 // make a pcap packet struct
