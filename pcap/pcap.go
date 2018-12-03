@@ -81,12 +81,3 @@ func (p *Pcap) EthernetFrames() []EthernetFrame {
 	}
 	return frames
 }
-
-// BytesToIntForEndianness determines the int for four bytes given an endianness
-func BytesToIntForEndianness(byteArray []byte, endianness binary.ByteOrder) int {
-	var expectedMagicNumber uint32
-	buffer := bytes.NewReader(byteArray)
-	err := binary.Read(buffer, endianness, &expectedMagicNumber)
-	check(err)
-	return int(expectedMagicNumber)
-}
