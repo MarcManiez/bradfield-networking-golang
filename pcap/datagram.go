@@ -59,7 +59,7 @@ func (d *Datagram) Payload() TCPSegment {
 	data := d.Data[d.HeaderLength():d.TotalLength()]
 	// TODO: use Protocol() to return different structs based on Protocol
 	// this will require us to modify the return type as well
-	return TCPSegment{Data: data}
+	return TCPSegment{Data: data, ContainingDatagram: d}
 }
 
 // BytesToIPAddress takes a byte slice and returns a string with ":" interpolated
