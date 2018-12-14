@@ -71,8 +71,8 @@ func (p *Pcap) Payload() []byte {
 func (p *Pcap) EthernetFrames() []EthernetFrame {
 	var frames = make([]EthernetFrame, 0)
 	var offset int
-	for offset < p.Size() {
-		payloadLengthBytes := p.File[offset+8 : offset+12]
+	for offset < len(p.Payload()) {
+		payloadLengthBytes := p.Payload()[offset+8 : offset+12]
 		payloadLength := BytesToIntForEndianness(payloadLengthBytes, p.Endianness)
 		endOfPacket := offset + 16 + payloadLength
 		ethernetFrame := EthernetFrame{Data: p.File[offset+16 : endOfPacket]}
