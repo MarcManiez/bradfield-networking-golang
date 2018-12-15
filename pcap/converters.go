@@ -15,6 +15,15 @@ func BytesToIntForEndianness(byteArray []byte, endianness binary.ByteOrder) int 
 	return int(expectedMagicNumber)
 }
 
+// BytesToIntForEndianness16 uint16 version of BytesToIntForEndianness
+func BytesToIntForEndianness16(byteArray []byte, endianness binary.ByteOrder) int {
+	var expectedMagicNumber uint16
+	buffer := bytes.NewReader(byteArray)
+	err := binary.Read(buffer, endianness, &expectedMagicNumber)
+	check(err)
+	return int(expectedMagicNumber)
+}
+
 // BytesToHex takes a byte array and returns a copy it in hex format
 func BytesToHex(byteArray []byte) []byte {
 	dst := make([]byte, hex.EncodedLen(len(byteArray)))

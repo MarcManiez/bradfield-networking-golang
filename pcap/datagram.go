@@ -30,7 +30,7 @@ func (d *Datagram) HeaderLength() int {
 
 // TotalLength returns the total length of the datagram in bytes
 func (d *Datagram) TotalLength() int {
-	return BytesToIntForEndianness(d.Data[2:4], binary.BigEndian)
+	return BytesToIntForEndianness16(d.Data[2:4], binary.BigEndian)
 }
 
 // PayloadLength returns datagram's payload lenght in bytes
