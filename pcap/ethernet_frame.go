@@ -20,9 +20,9 @@ func (e *EthernetFrame) EtherType() []byte {
 	return BytesToHex(e.Data[12:14])
 }
 
-// Payload returns a hex byte string of the mad destination address
+// Payload returns a byte slice of the ethernet frame's payload
 func (e *EthernetFrame) Payload() []byte {
-	return BytesToHex(e.Data[14:len(e.Data)])
+	return e.Data[14:len(e.Data)]
 }
 
 // Datagram returns the datagram for the ethernet frame
