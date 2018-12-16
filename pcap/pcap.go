@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/binary"
 	"os"
 )
@@ -55,11 +54,8 @@ func (p *Pcap) MagicNumberBytes() []byte {
 
 // LinkType returns link type for pcap file
 func (p *Pcap) LinkType() string {
-	var linkTypeInt uint32
-	buffer := bytes.NewReader(p.File[20:24])
-	err := binary.Read(buffer, p.Endianness, &linkTypeInt)
-	check(err)
-	return DataLinkTypeMapping[linkTypeInt]
+	linkTypeInt := BytesToIntForEndianness(p.File[20:24], p.Endianness)
+	return DataLinkTypeMapping[uint32(linkTypeInt)]
 }
 
 // Payload returns the payload of the pcap file
