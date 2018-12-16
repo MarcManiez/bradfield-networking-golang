@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -29,7 +28,6 @@ func main() {
 			sequenceNumberSet[tcpSegment.SequenceNumber()] = true
 		}
 	}
-	fmt.Printf("Test segment source port: %d\n", tcpSegments[0].SequenceNumber())
 	sort.SliceStable(tcpSegments, func(i, j int) bool {
 		return tcpSegments[i].SequenceNumber() < tcpSegments[j].SequenceNumber()
 	})
