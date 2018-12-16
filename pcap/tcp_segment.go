@@ -26,12 +26,12 @@ func (s *TCPSegment) PayloadLength() int {
 
 // SourcePort returns the TCP segment's source port
 func (s *TCPSegment) SourcePort() int {
-	return BytesToIntForEndianness(s.Data[0:2], binary.BigEndian)
+	return BytesToIntForEndianness16(s.Data[0:2], binary.BigEndian)
 }
 
 // DestinationPort returns the TCP segment's destination port
 func (s *TCPSegment) DestinationPort() int {
-	return BytesToIntForEndianness(s.Data[2:4], binary.BigEndian)
+	return BytesToIntForEndianness16(s.Data[2:4], binary.BigEndian)
 }
 
 // SequenceNumber returns the TCP segment's sequence number
