@@ -2,7 +2,7 @@ package main
 
 import "encoding/binary"
 
-// TCPSegment adds convenience methods over an array of bytes
+// TCPSegment adds convenience methods over a slice of bytes
 type TCPSegment struct {
 	Data               []byte
 	ContainingDatagram *Datagram
