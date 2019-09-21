@@ -5,17 +5,17 @@ type EthernetFrame struct {
 	Data []byte
 }
 
-// MacDestination returns a hex byte string of the mad destination address
+// MacDestination returns a hex byte string of the mac destination address
 func (e *EthernetFrame) MacDestination() []byte {
 	return BytesToHex(e.Data[0:6])
 }
 
-// MacSource returns a hex byte string of the mad destination address
+// MacSource returns a hex byte string of the mac destination address
 func (e *EthernetFrame) MacSource() []byte {
 	return BytesToHex(e.Data[6:12])
 }
 
-// EtherType returns a hex byte string of the mad destination address - We are assuming no tag for the time being.
+// EtherType returns a hex byte string of the mac destination address - We are assuming no tag for the time being.
 func (e *EthernetFrame) EtherType() []byte {
 	return BytesToHex(e.Data[12:14])
 }
